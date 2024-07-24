@@ -1,7 +1,7 @@
 # How to install
 
 ## Install python3.11
-https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe
+https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe
 
 And check the box "Add to PATH"
 
