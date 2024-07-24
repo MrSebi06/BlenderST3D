@@ -1,38 +1,97 @@
+import bpy
 import speech_recognition as sr
+import pyaudio
+import json
+import os
 
-# Initialize the recognizer
-r = sr.Recognizer()
+CONFIG_FILE = "microphone_config.json"
 
-# Loop infinitely for user to speak
-while True:
-    # Exception handling to handle exceptions at runtime
-    try:
-        # Use the microphone as source for input.
-        with sr.Microphone() as source2:
-            # Wait for a second to let the recognizer
-            # adjust the energy threshold based on
-            # the surrounding noise level
-            r.adjust_for_ambient_noise(source2, duration=0.2)
 
-            print("Listening...")
+def list_microphones():
+    p = pyaudio.PyAudio()
+    info = p.get_host_api_info_by_index(0)
+    numdevices = info.get('deviceCount')
+    microphones = []
+    for i in range(0, numdevices):
+        if p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels') > 0:
+            microphones.append((i, p.get_device_info_by_host_api_device_index(0, i).get('name')))
+    return microphones
 
-            # Listens for the user's input
-            audio2 = r.listen(source2)
 
-            # Using Sphinx to recognize audio
-            MyText = r.recognize_sphinx(audio2)
-            MyText = MyText.lower()
+def save_microphone_config(mic_index):
+    config = {"microphone_index": mic_index}
+    with open(CONFIG_FILE, 'w') as config_file:
+        json.dump(config, config_file)
+    print(f"Microphone index {mic_index} saved to {CONFIG_FILE}")
 
-            print("Did you say:", MyText)
 
-    except sr.RequestError as e:
-        print("Could not request results; {0}".format(e))
+def load_microphone_config():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'r') as config_file:
+            config = json.load(config_file)
+            return config.get("microphone_index", None)
+    return None
 
-    except sr.UnknownValueError:
-        print("Unknown error occurred")
 
-    except IOError as e:
-        print("I/O error({0}): {1}".format(e.errno, e.strerror))
+def recognize_speech(mic_index):
+    recognizer = sr.Recognizer()
+    microphone_list = sr.Microphone.list_microphone_names()
+    if microphone_list and mic_index < len(microphone_list):
+        microphone_name = microphone_list[mic_index]
+        print(f"Using microphone: {microphone_name}")
+        with sr.Microphone(device_index=mic_index) as source:
+            print("Say a command!")
+            audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_google(audio)
+            print(f"You said: {text}")
+            return text.lower(), microphone_name  # Return the recognized text and microphone name
+        except sr.UnknownValueError:
+            print("Could not understand audio")
+        except sr.RequestError as e:
+            print(f"Could not request results; {e}")
+    else:
+        print("Invalid microphone index")
+    return "", "No microphone"
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+
+def extrude_function():
+    print("Extrude function called")
+
+
+def execute_command(command):
+    if "extrude" in command:
+        extrude_function()
+    else:
+        print("Command not recognized")
+
+
+def main():
+    print()
+    print("Available microphones:")
+    microphones = list_microphones()
+    for i, mic in microphones:
+        print(f"{i}: {mic}")
+    print()
+    mic_index = load_microphone_config()
+    if mic_index is not None:
+        print(f"Loaded microphone index from config: {mic_index}")
+        print()
+    else:
+        try:
+            mic_index = int(input("Enter the index of the microphone you want to use: "))
+            print()
+            save_microphone_config(mic_index)
+        except ValueError:
+            print("Invalid input. Using default microphone.")
+            print()
+            mic_index = 0
+
+    command, mic_name = recognize_speech(mic_index)
+    print(f"Microphone used: {mic_name}")
+    print()
+    execute_command(command)
+
+
+if __name__ == "__main__":
+    main()

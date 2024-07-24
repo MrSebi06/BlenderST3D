@@ -22,3 +22,10 @@ typing_extensions==4.12.2
 tzdata==2024.1
 tzlocal==5.2
 urllib3==2.2.2
+
+pip~=24.1.2
+wheel~=0.41.2
+zstandard~=0.23.0
+setuptools~=68.2.0
+Cython~=3.0.10
+bpy~=4.1.0
