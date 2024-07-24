@@ -22,6 +22,7 @@ def main():
 
     while True:
         command, mic_name = recognize_speech(mic_index, duration=5)
+        print(f"Microphone used: {mic_name}")
         print()
         if command == "stop listening":
             print("Stopping the program.")
