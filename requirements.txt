@@ -7,7 +7,6 @@ idna==3.7
 Js2Py==0.74
 packaging==24.1
 pipwin==0.5.2
-pocketsphinx==5.0.3
 PyAudio==0.2.14
 pycparser==2.22
 pyjsparser==2.7.1
@@ -22,3 +21,4 @@ typing_extensions==4.12.2
 tzdata==2024.1
 tzlocal==5.2
 urllib3==2.2.2
+bpy~=4.1.0
