@@ -1,4 +1,10 @@
 # How to install
+
+## Install python3.11
+https://www.python.org/ftp/python/3.12.3/python-3.12.3-amd64.exe
+
+And check the box "Add to PATH"
+
 ## Create your venv
 `python -m venv .venv`
 
