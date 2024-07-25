@@ -29,3 +29,4 @@ zstandard~=0.23.0
 setuptools~=68.2.0
 Cython~=3.0.10
 bpy~=4.1.0
+fuzzywuzzy~=0.18.0
