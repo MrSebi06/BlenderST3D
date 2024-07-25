@@ -19,7 +19,7 @@ def get_installed_packages():
 
 def main():
     packages = get_installed_packages()
-    formatted_list = f"[{', '.join(packages)}]"
+    formatted_list = f"{', '.join(packages)}"
     print(formatted_list)
 
 if __name__ == "__main__":

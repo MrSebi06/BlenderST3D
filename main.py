@@ -1,3 +1,5 @@
+from fuzzywuzzy import process
+
 import bpy
 
 import speech_recognition as sr
@@ -44,6 +46,13 @@ def execute_command(command, current_mic_index):
     return current_mic_index, executed_command
 
 
+COMMANDS = [
+    "extrude",
+    "change microphone",
+    "stop listening"
+]
+
+
 def list_microphones():
     p = pyaudio.PyAudio()
     info = p.get_host_api_info_by_index(0)
@@ -67,7 +76,16 @@ def recognize_speech(mic_index, duration=5):
         try:
             text = recognizer.recognize_google(audio)
             print(f"You said: {text}")
-            return text.lower(), microphone_name  # Return the recognized text and microphone name
+
+            # Find the closest matching command
+            closest_match = process.extractOne(text.lower(), COMMANDS)
+            if closest_match and closest_match[1] > 70:  # Threshold for matching
+                print(f"Interpreted as: {closest_match[0]}")
+                return closest_match[0], microphone_name
+            else:
+                print("Could not match the command to any known commands.")
+                return "", microphone_name
+
         except sr.UnknownValueError:
             print("Could not understand audio")
         except sr.RequestError as e:
