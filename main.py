@@ -109,6 +109,9 @@ def main():
     else:
         mic_index = change_microphone()
 
+    while True:
+        command, mic_name = recognize_speech(mic_index, duration=5)
+        print(f"Microphone used: {mic_name}")
     executed_command = False
     while not executed_command:
         command, mic_name = recognize_speech(mic_index)
